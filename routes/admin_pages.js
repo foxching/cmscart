@@ -5,7 +5,9 @@ var Page = require('../models/page')
 
 // get pages
 router.get('/', function (req, res, next) {
-	res.send('admin pages');
+	Page.find({}).sort().exec(function (err, pages) {
+		res.render('admin/pages', { pages: pages })
+	})
 });
 
 //get add page
@@ -44,7 +46,7 @@ router.post(
 						title: title,
 						content: content,
 						slug: slug,
-						sorting: 0
+						sorting: 100
 					})
 
 					page.save(function (err) {
