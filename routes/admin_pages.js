@@ -11,15 +11,16 @@ router.get('/', function (req, res, next) {
 });
 
 //get add page
-router.get('/add_pages', function (req, res, nexy) {
+router.get('/add-page', function (req, res, nexy) {
 	var title = '';
 	var slug = '';
 	var content = '';
 	res.render('admin/add_page', { title: title, slug: slug, content: content });
 });
+
 //add page
 router.post(
-	'/add_pages',
+	'/add-page',
 	[
 		check('title', 'Invalid title').not().isEmpty().withMessage('title must not be empty'),
 		check('content', 'Invalid content').not().isEmpty().withMessage('content must not be empty')
@@ -61,6 +62,17 @@ router.post(
 		}
 	}
 );
+
+//get edit page
+router.get('/edit-page/:slug', function (req, res, nexy) {
+	Page.findOne({ slug: req.params.slug }, function (err, page) {
+		if (err) {
+			console.log(err)
+		}
+		res.render('admin/edit_page', { title: page.title, slug: page.slug, content: page.content, id: page._id });
+	})
+
+});
 
 // reorder-pages
 router.post('/reorder-pages', function (req, res, next) {
