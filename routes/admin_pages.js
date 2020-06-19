@@ -5,7 +5,7 @@ var Page = require('../models/page')
 
 // get pages
 router.get('/', function (req, res, next) {
-	Page.find({}).sort().exec(function (err, pages) {
+	Page.find({}).sort({ sorting: 1 }).exec(function (err, pages) {
 		res.render('admin/pages', { pages: pages })
 	})
 });
@@ -61,5 +61,28 @@ router.post(
 		}
 	}
 );
+
+// reorder-pages
+router.post('/reorder-pages', function (req, res, next) {
+	var ids = req.body['id[]'];
+	var count = 0;
+	for (var i = 0; i < ids.length; i++) {
+		var id = ids[i];
+		count++;
+
+		(function (count) {
+			Page.findById(id, function (err, page) {
+				page.sorting = count;
+				page.save(function (err) {
+					if (err) {
+						console.log(err)
+					}
+				})
+			})
+		})(count)
+
+	}
+});
+
 
 module.exports = router;
