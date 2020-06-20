@@ -15,7 +15,7 @@
         <label for="content">Content</label>
         <textarea name="content" cols="30" rows="10" class="form-control"><%= content %></textarea>
     </div>
-    <input type="hidden" value="<%= id %>">
+    <input type="hidden" name="id" value="<%= id %>">
     <button class="btn btn-default">Submit</button>
 </form>
 <%- include('../layouts/adminfooter.ejs')%>

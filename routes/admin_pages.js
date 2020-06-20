@@ -1,31 +1,31 @@
 var express = require('express');
 var router = express.Router();
 const { check, validationResult } = require('express-validator');
-var Page = require('../models/page')
+var Page = require('../models/page');
 
 // get pages
-router.get('/', function (req, res, next) {
-	Page.find({}).sort({ sorting: 1 }).exec(function (err, pages) {
-		res.render('admin/pages', { pages: pages })
-	})
+router.get('/', function(req, res, next) {
+	Page.find({}).sort({ sorting: 1 }).exec(function(err, pages) {
+		res.render('admin/pages', { pages: pages });
+	});
 });
 
 //get add page
-router.get('/add-page', function (req, res, nexy) {
+router.get('/add-page', function(req, res, nexy) {
 	var title = '';
 	var slug = '';
 	var content = '';
 	res.render('admin/add_page', { title: title, slug: slug, content: content });
 });
 
-//add page
+//post add page
 router.post(
 	'/add-page',
 	[
 		check('title', 'Invalid title').not().isEmpty().withMessage('title must not be empty'),
 		check('content', 'Invalid content').not().isEmpty().withMessage('content must not be empty')
 	],
-	function (req, res, next) {
+	function(req, res, next) {
 		var title = req.body.title;
 		var slug = req.body.slug.replace(/\s+/g, '=').toLowerCase();
 		if (slug == '') {
@@ -38,63 +38,113 @@ router.post(
 			//return res.status(422).json({ errors: errors.array() });
 			res.render('admin/add_page', { title: title, slug: slug, content: content, errors: errors.array() });
 		} else {
-			Page.findOne({ slug: slug }, function (err, page) {
+			Page.findOne({ slug: slug }, function(err, page) {
 				if (page) {
-					req.flash('danger', 'Page slug already exists')
-					res.render('admin/add_page', { title: title, slug: slug, content: content, });
+					req.flash('danger', 'Page slug already exists');
+					res.render('admin/add_page', { title: title, slug: slug, content: content });
 				} else {
 					var page = new Page({
 						title: title,
 						content: content,
 						slug: slug,
 						sorting: 100
-					})
+					});
 
-					page.save(function (err) {
+					page.save(function(err) {
 						if (err) {
-							console.log(err)
+							console.log(err);
 						}
-						req.flash('success', 'Page added successfully')
-						res.redirect('/admin/pages')
-					})
+						req.flash('success', 'Page added successfully');
+						res.redirect('/admin/pages');
+					});
 				}
-			})
+			});
 		}
 	}
 );
 
 //get edit page
-router.get('/edit-page/:slug', function (req, res, nexy) {
-	Page.findOne({ slug: req.params.slug }, function (err, page) {
+router.get('/edit-page/:slug', function(req, res, nexy) {
+	Page.findOne({ slug: req.params.slug }, function(err, page) {
 		if (err) {
-			console.log(err)
+			console.log(err);
 		}
 		res.render('admin/edit_page', { title: page.title, slug: page.slug, content: page.content, id: page._id });
-	})
-
+	});
 });
 
+//edit page
+router.post(
+	'/edit-page/:slug',
+	[
+		check('title', 'Invalid title').not().isEmpty().withMessage('title must not be empty'),
+		check('content', 'Invalid content').not().isEmpty().withMessage('content must not be empty')
+	],
+	function(req, res, next) {
+		var title = req.body.title;
+		var slug = req.body.slug.replace(/\s+/g, '=').toLowerCase();
+		if (slug == '') {
+			slug = title.replace(/\s+/g, '=').toLowerCase();
+		}
+		var content = req.body.content;
+		var id = req.body.id;
+
+		var errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			//return res.status(422).json({ errors: errors.array() });
+			res.render('admin/edit_page', {
+				title: title,
+				slug: slug,
+				content: content,
+				id: id,
+				errors: errors.array()
+			});
+		} else {
+			Page.findOne({ slug: slug, _id: { $ne: id } }, function(err, page) {
+				if (page) {
+					req.flash('danger', 'Page slug already exists');
+					res.render('admin/edit_page', { title: title, slug: slug, content: content, id: id });
+				} else {
+					Page.findById(id, function(err, page) {
+						if (err) return console.log(err);
+
+						page.title = title;
+						page.slug = slug;
+						page.content = content;
+
+						page.save(function(err) {
+							if (err) {
+								console.log(err);
+							}
+							req.flash('success', 'Page updated Successfully');
+							res.redirect('/admin/pages/edit-page/' + page.slug);
+						});
+					});
+				}
+			});
+		}
+	}
+);
+
 // reorder-pages
-router.post('/reorder-pages', function (req, res, next) {
+router.post('/reorder-pages', function(req, res, next) {
 	var ids = req.body['id[]'];
 	var count = 0;
 	for (var i = 0; i < ids.length; i++) {
 		var id = ids[i];
 		count++;
 
-		(function (count) {
-			Page.findById(id, function (err, page) {
+		(function(count) {
+			Page.findById(id, function(err, page) {
 				page.sorting = count;
-				page.save(function (err) {
+				page.save(function(err) {
 					if (err) {
-						console.log(err)
+						console.log(err);
 					}
-				})
-			})
-		})(count)
-
+				});
+			});
+		})(count);
 	}
 });
-
 
 module.exports = router;
