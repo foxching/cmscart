@@ -4,7 +4,10 @@ var Category = require('../models/category');
 
 // get pages
 router.get('/', function(req, res, next) {
-	res.send('category index');
+	Category.find({}, function(err, categories) {
+		if (err) return console.log(err);
+		res.render('admin/categories', { categories: categories });
+	});
 });
 
 module.exports = router;
