@@ -126,6 +126,15 @@ router.post(
 	}
 );
 
+// get delete  page
+router.get('/delete-page/:id', function(req, res, next) {
+	Page.findByIdAndRemove(req.params.id, function(err) {
+		if (err) return console.log(err);
+		req.flash('success', 'Page Deleted');
+		res.redirect('/admin/pages');
+	});
+});
+
 // reorder-pages
 router.post('/reorder-pages', function(req, res, next) {
 	var ids = req.body['id[]'];
