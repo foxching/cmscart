@@ -12,6 +12,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 var pages = require('./routes/pages');
 var admin_pages = require('./routes/admin_pages');
+var admin_categories = require('./routes/admin_categories');
 
 var app = express();
 
@@ -46,6 +47,7 @@ app.use(function(req, res, next) {
 });
 
 app.use('/admin/pages', admin_pages);
+app.use('/admin/categories', admin_categories);
 app.use('/', pages);
 
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
