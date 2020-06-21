@@ -12,12 +12,16 @@
     "dotenv": "^8.2.0",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
+    "express-fileupload": "^1.1.7-alpha.3",
     "express-messages": "^1.0.1",
     "express-session": "^1.17.1",
     "express-validator": "^6.5.0",
+    "fs-extra": "^9.0.1",
     "http-errors": "~1.6.3",
+    "mkdirp": "^1.0.4",
     "mongoose": "^5.9.18",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "resize-img": "^2.0.0"
   },
   "main": "app.js",
   "keywords": [],

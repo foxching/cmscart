@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var logger = require('morgan');
+var fileUpload = require('express-fileupload');
 
 if (process.env.NODE_ENV !== 'production') {
 	require('dotenv/config');
@@ -13,12 +14,16 @@ if (process.env.NODE_ENV !== 'production') {
 var pages = require('./routes/pages');
 var admin_pages = require('./routes/admin_pages');
 var admin_categories = require('./routes/admin_categories');
+var admin_products = require('./routes/admin_products');
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+//express fileupload middleware
+app.use(fileUpload());
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -48,6 +53,7 @@ app.use(function(req, res, next) {
 
 app.use('/admin/pages', admin_pages);
 app.use('/admin/categories', admin_categories);
+app.use('/admin/products', admin_products);
 app.use('/', pages);
 
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
