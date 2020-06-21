@@ -64,8 +64,8 @@ router.post(
 );
 
 //get edit page
-router.get('/edit-page/:slug', function(req, res, nexy) {
-	Page.findOne({ slug: req.params.slug }, function(err, page) {
+router.get('/edit-page/:id', function(req, res, nexy) {
+	Page.findById(req.params.id, function(err, page) {
 		if (err) {
 			console.log(err);
 		}
@@ -75,7 +75,7 @@ router.get('/edit-page/:slug', function(req, res, nexy) {
 
 //edit page
 router.post(
-	'/edit-page/:slug',
+	'/edit-page/:id',
 	[
 		check('title', 'Invalid title').not().isEmpty().withMessage('title must not be empty'),
 		check('content', 'Invalid content').not().isEmpty().withMessage('content must not be empty')
@@ -87,7 +87,7 @@ router.post(
 			slug = title.replace(/\s+/g, '=').toLowerCase();
 		}
 		var content = req.body.content;
-		var id = req.body.id;
+		var id = req.params.id;
 
 		var errors = validationResult(req);
 		if (!errors.isEmpty()) {
@@ -117,7 +117,7 @@ router.post(
 								console.log(err);
 							}
 							req.flash('success', 'Page updated Successfully');
-							res.redirect('/admin/pages/edit-page/' + page.slug);
+							res.redirect('/admin/pages/edit-page/' + id);
 						});
 					});
 				}
