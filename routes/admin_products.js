@@ -10,7 +10,7 @@ var Category = require('../models/category');
 router.get('/', function(req, res, next) {
 	var count;
 
-	Product.count(function(err, c) {
+	Product.countDocuments(function(err, c) {
 		count = c;
 	});
 
@@ -19,6 +19,16 @@ router.get('/', function(req, res, next) {
 			products: products,
 			count: count
 		});
+	});
+});
+
+//get add product
+router.get('/add-product', function(req, res, nexy) {
+	var title = '';
+	var desc = '';
+	var price = '';
+	Category.find(function(err, categories) {
+		res.render('admin/add_product', { title: title, desc: desc, categories: categories, price: price });
 	});
 });
 
