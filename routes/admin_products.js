@@ -9,14 +9,14 @@ var Product = require('../models/product');
 var Category = require('../models/category');
 
 // get products
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
 	var count;
 
-	Product.countDocuments(function(err, c) {
+	Product.countDocuments(function (err, c) {
 		count = c;
 	});
 
-	Product.find(function(err, products) {
+	Product.find(function (err, products) {
 		res.render('admin/products', {
 			products: products,
 			count: count
@@ -25,11 +25,11 @@ router.get('/', function(req, res, next) {
 });
 
 //get add product
-router.get('/add-product', function(req, res, nexy) {
+router.get('/add-product', function (req, res, nexy) {
 	var title = '';
 	var desc = '';
 	var price = '';
-	Category.find(function(err, categories) {
+	Category.find(function (err, categories) {
 		res.render('admin/add_product', { title: title, desc: desc, categories: categories, price: price });
 	});
 });
@@ -46,7 +46,7 @@ router.post(
 			.withMessage('Price must not be empty')
 			.isDecimal()
 			.withMessage('Price must be decimal'),
-		check('image', 'You must upload an image').custom(function(value, { req }) {
+		check('image', 'You must upload an image').custom(function (value, { req }) {
 			if (!req.files) {
 				imageFile = '';
 			}
@@ -68,7 +68,7 @@ router.post(
 			}
 		})
 	],
-	function(req, res, next) {
+	function (req, res, next) {
 		var title = req.body.title;
 		var slug = title.replace(/\s+/g, '=').toLowerCase();
 		var desc = req.body.desc;
@@ -85,7 +85,7 @@ router.post(
 		var errors = validationResult(req);
 		if (!errors.isEmpty()) {
 			//return res.status(422).json({ errors: errors.array() });
-			Category.find(function(err, categories) {
+			Category.find(function (err, categories) {
 				res.render('admin/add_product', {
 					title: title,
 					desc: desc,
@@ -95,10 +95,10 @@ router.post(
 				});
 			});
 		} else {
-			Product.findOne({ slug: slug }, function(err, product) {
+			Product.findOne({ slug: slug }, function (err, product) {
 				if (product) {
 					req.flash('danger', 'Product title already exists');
-					Category.find(function(err, categories) {
+					Category.find(function (err, categories) {
 						res.render('admin/add_product', {
 							title: title,
 							desc: desc,
@@ -117,26 +117,26 @@ router.post(
 						image: imageFile
 					});
 
-					product.save(function(err) {
+					product.save(function (err) {
 						if (err) {
 							console.log(err);
 						}
-						mkdirp('public/product_images/' + product._id, function(err) {
+						mkdirp('public/product_images/' + product._id, function (err) {
 							return console.log(err);
 						});
 
-						mkdirp('public/product_images/' + product._id + '/gallery', function(err) {
+						mkdirp('public/product_images/' + product._id + '/gallery', function (err) {
 							return console.log(err);
 						});
 
-						mkdirp('public/product_images/' + product._id + '/gallery/thumbs', function(err) {
+						mkdirp('public/product_images/' + product._id + '/gallery/thumbs', function (err) {
 							return console.log(err);
 						});
 
 						if (imageFile != '') {
 							var productImage = req.files.image;
 							var pathFile = 'public/product_images/' + product._id + '/' + imageFile;
-							productImage.mv(pathFile, function(err) {
+							productImage.mv(pathFile, function (err) {
 								return console.log(err);
 							});
 						}
@@ -151,30 +151,31 @@ router.post(
 );
 
 //get edit product
-router.get('/edit-product/:id', function(req, res, nexy) {
+router.get('/edit-product/:id', function (req, res, nexy) {
 	var errors;
 	if (req.session.errors) errors = req.session.errors;
 	req.session.errors = null;
 
-	Category.find(function(err, categories) {
-		Product.findById(req.params.id, function(err, product) {
+	Category.find(function (err, categories) {
+		Product.findById(req.params.id, function (err, product) {
 			if (err) {
 				console.log(err);
 				res.redirect('/admin/products');
 			} else {
 				var galleryDir = 'public/product_images/' + product._id + '/gallery';
 				var galleryImages = null;
-				fs.readdir(galleryDir, function(err, files) {
+				fs.readdir(galleryDir, function (err, files) {
 					if (err) {
 						console.log(err);
 					} else {
 						galleryImages = files;
 						res.render('admin/edit_product', {
+							id: product._id,
 							title: product.title,
 							desc: product.desc,
 							categories: categories,
 							category: product.category.replace(/\s+/g, '=').toLowerCase(),
-							price: product.price,
+							price: parseFloat(product.price).toFixed(2),
 							image: product.image,
 							galleryImages: galleryImages,
 							errors: errors
