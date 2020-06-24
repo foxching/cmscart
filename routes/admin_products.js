@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 var path = require('path');
 var mkdirp = require('mkdirp');
-var fs = require('fs-extra');
+var fse = require('fs-extra');
+var fs = require('fs');
 var resizeImg = require('resize-img');
 const { check, validationResult } = require('express-validator');
 var Product = require('../models/product');
@@ -151,7 +152,7 @@ router.post(
 );
 
 //get edit product
-router.get('/edit-product/:id', function (req, res, nexy) {
+router.get('/edit-product/:id', function (req, res, next) {
 	var errors;
 	if (req.session.errors) errors = req.session.errors;
 	req.session.errors = null;
@@ -186,5 +187,110 @@ router.get('/edit-product/:id', function (req, res, nexy) {
 		});
 	});
 });
+
+//edit product
+router.post(
+	'/edit-product/:id',
+	[
+		check('title', 'Invalid title').not().isEmpty().withMessage('Title must not be empty'),
+		check('desc', 'Invalid description').not().isEmpty().withMessage('Description must not be empty'),
+		check('price', 'Invalid price')
+			.not()
+			.isEmpty()
+			.withMessage('Price must not be empty')
+			.isDecimal()
+			.withMessage('Price must be decimal'),
+		check('image', 'You must upload an image').custom(function (value, { req }) {
+			if (!req.files) {
+				imageFile = '';
+			}
+			if (req.files) {
+				var imageFile = typeof req.files.image !== 'undefined' ? req.files.image.name : '';
+			}
+			var extension = path.extname(imageFile).toLowerCase();
+			switch (extension) {
+				case '.jpg':
+					return '.jpg';
+				case '.jpeg':
+					return '.jpeg';
+				case '.png':
+					return '.png';
+				case '':
+					return '.jpg';
+				default:
+					return false;
+			}
+		})
+	],
+	function (req, res, next) {
+		var title = req.body.title;
+		var slug = title.replace(/\s+/g, '=').toLowerCase();
+		var desc = req.body.desc;
+		var price = req.body.price;
+		var category = req.body.category;
+		var imageFile;
+		if (!req.files) {
+			imageFile = '';
+		}
+		if (req.files) {
+			imageFile = typeof req.files.image !== 'undefined' ? req.files.image.name : '';
+		}
+		var pimage = req.body.pimage;
+		var id = req.params.id
+
+		var errors = validationResult(req);
+
+		if (!errors.isEmpty()) {
+			req.session.errors = errors.array()
+			res.redirect('/admin/products/edit-product/' + id)
+		} else {
+			Product.findOne({ slug: slug, _id: { $ne: id } }, function (err, product) {
+				if (err) return console.log(err)
+				if (product) {
+					req.flash('danger', 'Product title already exist')
+					res.redirect('/admin/products/edit-product/' + id)
+				} else {
+					Product.findById(id, function (err, product) {
+						if (err) return console.log(err)
+						product.title = title;
+						product.slug = slug;
+						product.desc = desc;
+						product.category = category;
+						product.price = parseFloat(price).toFixed(2);
+						if (imageFile != '') {
+							product.image = imageFile
+						}
+
+						product.save(function (err) {
+							if (err) return console.log(err)
+
+							if (imageFile != "") {
+								if (pimage != "") {
+									var pathFile = 'public/product_images/' + id + '/' + pimage;
+									fse.remove(pathFile, function (err) {
+										if (err) return console.log(err)
+									})
+
+								}
+
+								var productImage = req.files.image;
+								var pathFile = 'public/product_images/' + id + '/' + imageFile;
+								productImage.mv(pathFile, function (err) {
+									return console.log(err);
+								});
+							}
+
+							req.flash('success', 'Product edited successfully');
+							res.redirect('/admin/products/edit-product/' + id)
+						})
+
+					})
+				}
+			})
+		}
+	}
+
+);
+
 
 module.exports = router;
