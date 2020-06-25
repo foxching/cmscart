@@ -338,4 +338,24 @@ router.get('/delete-image/:image', function (req, res) {
 	});
 });
 
+/*
+ * GET delete product
+ */
+
+router.get('/delete-product/:id', function (req, res, next) {
+	var id = req.params.id;
+	var path = 'public/product_images/' + id
+	fse.remove(path, function (err) {
+		if (err) {
+			return console.log(err)
+		} else {
+			Product.findByIdAndRemove(id, function (err) {
+				if (err) return console.log(err)
+				req.flash('success', 'Product deleted!');
+				res.redirect('/admin/products');
+			})
+		}
+	})
+});
+
 module.exports = router;
