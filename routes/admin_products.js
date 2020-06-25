@@ -291,7 +291,9 @@ router.post(
 	}
 
 );
-
+/*
+ * POST upload gallery image
+ */
 router.post('/product-gallery/:id', function (req, res) {
 
 	var productImage = req.files.file;
@@ -310,6 +312,30 @@ router.post('/product-gallery/:id', function (req, res) {
 
 	res.sendStatus(200);
 
+});
+
+/*
+ * GET delete image
+ */
+router.get('/delete-image/:image', function (req, res) {
+
+	var originalImage = 'public/product_images/' + req.query.id + '/gallery/' + req.params.image;
+	var thumbImage = 'public/product_images/' + req.query.id + '/gallery/thumbs/' + req.params.image;
+
+	fse.remove(originalImage, function (err) {
+		if (err) {
+			console.log(err);
+		} else {
+			fse.remove(thumbImage, function (err) {
+				if (err) {
+					console.log(err);
+				} else {
+					req.flash('success', 'Image deleted!');
+					res.redirect('/admin/products/edit-product/' + req.query.id);
+				}
+			});
+		}
+	});
 });
 
 module.exports = router;
