@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= title %></title>
-    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 
@@ -50,12 +50,10 @@
                     </li>
                     <% categories.forEach(function(category){ %>
                     <li class="list-group-item">
-                        <a href="/products/<%= category.slug %>"><%= category.title %></a> 
+                        <a href="/products/<%= category.slug %>"><%= category.title %></a>
                     </li>
                     <% }) %>
                 </ul>
             </div>
             <div class="col-xs-12 col-md-1"></div>
             <div class="col-xs-12 col-md-8">
-
-          

@@ -1,8 +1,11 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+img.pimage{
+  width: 150px;
 }
-
-a {
-  color: #00B7FF;
+a.pa{
+  display: inline-block;
+  height: 160px;
+}
+.row.products .p{
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
