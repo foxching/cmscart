@@ -74,9 +74,15 @@ app.use(function (req, res, next) {
 	next();
 });
 
+app.get('*', function (req, res, next) {
+	res.locals.cart = req.session.cart
+	next()
+})
+
 //set routes
 var pages = require('./routes/pages');
 var products = require('./routes/products');
+var cart = require('./routes/cart')
 var admin_pages = require('./routes/admin_pages');
 var admin_categories = require('./routes/admin_categories');
 var admin_products = require('./routes/admin_products');
@@ -85,6 +91,7 @@ app.use('/admin/pages', admin_pages);
 app.use('/admin/categories', admin_categories);
 app.use('/admin/products', admin_products);
 app.use('/products', products);
+app.use('/cart', cart)
 app.use('/', pages);
 
 //mongodb connection
