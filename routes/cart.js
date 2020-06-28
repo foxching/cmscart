@@ -5,16 +5,16 @@ var Product = require('../models/product');
 /* 
 * GET cart
 */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
 	res.send('Cart');
 });
 
 /* 
 * ADD product to cart
 */
-router.get('/add/:product', function(req, res, next) {
+router.get('/add/:product', function (req, res, next) {
 	var slug = req.params.product;
-	Product.findOne({ slug: slug }, function(err, product) {
+	Product.findOne({ slug: slug }, function (err, product) {
 		if (err) return console.log(err);
 		if (typeof req.session.cart == 'undefined') {
 			req.session.cart = [];
@@ -52,7 +52,7 @@ router.get('/add/:product', function(req, res, next) {
 /* 
 * GET cart checkout 
 */
-router.get('/checkout', function(req, res, next) {
+router.get('/checkout', function (req, res, next) {
 	if (req.session.cart && req.session.cart.length == 0) {
 		delete req.session.cart;
 		res.redirect('/cart/checkout');
@@ -68,7 +68,7 @@ router.get('/checkout', function(req, res, next) {
 * UPDATE cart product quantity
 */
 
-router.get('/update/:product', function(req, res, next) {
+router.get('/update/:product', function (req, res, next) {
 	var product = req.params.product;
 	var cart = req.session.cart;
 	var action = req.query.action;
@@ -104,10 +104,22 @@ router.get('/update/:product', function(req, res, next) {
 /* 
 * clear all cart item
 */
-router.get('/clear', function(req, res, next) {
+router.get('/clear', function (req, res, next) {
 	delete req.session.cart;
 	req.flash('success', 'Cart Items cleared');
 	res.redirect('/cart/checkout');
 });
+
+/*
+ * GET buy now
+ */
+router.get('/buynow', function (req, res) {
+
+	delete req.session.cart;
+
+	res.sendStatus(200);
+
+});
+
 
 module.exports = router;
