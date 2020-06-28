@@ -6,28 +6,28 @@ var Product = require('../models/product');
 /* 
 * GET
 */
-router.get('/', function (req, res, next) {
-	res.send('Cart')
+router.get('/', function(req, res, next) {
+	res.send('Cart');
 });
 
-router.get('/add/:product', function (req, res, next) {
-	var slug = req.params.product
-	Product.findOne({ slug: slug }, function (err, product) {
-		if (err) return console.log(err)
+router.get('/add/:product', function(req, res, next) {
+	var slug = req.params.product;
+	Product.findOne({ slug: slug }, function(err, product) {
+		if (err) return console.log(err);
 		if (typeof req.session.cart == 'undefined') {
-			req.session.cart = []
+			req.session.cart = [];
 			req.session.cart.push({
 				title: slug,
 				qty: 1,
 				price: parseFloat(product.price).toFixed(2),
 				image: '/product_images/' + product.id + '/' + product.image
-			})
+			});
 		} else {
-			var cart = req.session.cart
-			var newItem = true
+			var cart = req.session.cart;
+			var newItem = true;
 			for (var i = 0; i < cart.length; i++) {
 				if (cart[i].title == slug) {
-					cart[i].qty++
+					cart[i].qty++;
 					newItem = false;
 					break;
 				}
@@ -38,21 +38,58 @@ router.get('/add/:product', function (req, res, next) {
 					qty: 1,
 					price: parseFloat(product.price).toFixed(2),
 					image: '/product_images/' + product.id + '/' + product.image
-				})
+				});
 			}
 		}
-		console.log(req.session.cart)
-		req.flash('success', 'Product added to Cart')
-		res.redirect('back')
-	})
+		console.log(req.session.cart);
+		req.flash('success', 'Product added to Cart');
+		res.redirect('back');
+	});
 });
 
-router.get('/checkout', function (req, res, next) {
-	res.render('checkout', {
-		title: 'Checkout',
-		cart: req.session.cart
-	})
+router.get('/checkout', function(req, res, next) {
+	if (req.session.cart && req.session.cart.length == 0) {
+		delete req.session.cart;
+		res.redirect('/cart/checkout');
+	} else {
+		res.render('checkout', {
+			title: 'Checkout',
+			cart: req.session.cart
+		});
+	}
 });
 
+router.get('/update/:product', function(req, res, next) {
+	var product = req.params.product;
+	var cart = req.session.cart;
+	var action = req.query.action;
+
+	for (var i = 0; i < cart.length; i++) {
+		if (cart[i].title == product) {
+			switch (action) {
+				case 'add':
+					cart[i].qty++;
+					break;
+				case 'remove':
+					cart[i].qty--;
+					if (cart[i].qty < 1) {
+						cart.splice(i, 1);
+					}
+					break;
+				case 'clear':
+					cart.splice(i, 1);
+					if (cart.length == 0) {
+						delete req.session.cart;
+					}
+					break;
+				default:
+					console.log('updating problem');
+					break;
+			}
+		}
+	}
+	req.flash('success', 'Cart product updated');
+	res.redirect('/cart/checkout');
+});
 
 module.exports = router;

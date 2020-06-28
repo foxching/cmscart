@@ -19,7 +19,7 @@ router.get('/', function(req, res, next) {
 */
 router.get('/:category', function(req, res, next) {
 	var categorySlug = req.params.category;
-	Category.find({ slug: categorySlug }, function(err, category) {
+	Category.findOne({ slug: categorySlug }, function(err, category) {
 		if (err) return console.log(err);
 		Product.find({ category: categorySlug }, function(err, products) {
 			if (err) console.log(err);

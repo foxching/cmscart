@@ -23,8 +23,8 @@
         <td><%= product.qty %> </td>
         <td>
             <a href="/cart/update/<%= product.title %>?action=add">+</a>&nbsp;
-            <a href="/cart/update/<%= product.title %>?action=add">-</a>&nbsp;
-            <a href="/cart/update/<%= product.title %>?action=add">Clear</a>
+            <a href="/cart/update/<%= product.title %>?action=remove">-</a>&nbsp;
+            <a href="/cart/update/<%= product.title %>?action=clear">Clear</a>
         </td>
         <td>
             <%= subTotal  %>
