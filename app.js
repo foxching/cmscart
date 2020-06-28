@@ -74,6 +74,14 @@ app.use(function (req, res, next) {
 	next();
 });
 
+
+// Passport Config
+require('./config/passport')(passport);
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 app.get('*', function (req, res, next) {
 	res.locals.cart = req.session.cart
 	next()
