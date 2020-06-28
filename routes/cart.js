@@ -20,7 +20,7 @@ router.get('/add/:product', function (req, res, next) {
 				title: slug,
 				qty: 1,
 				price: parseFloat(product.price).toFixed(2),
-				image: 'public/product_images/' + product.id + '/' + product.image
+				image: '/product_images/' + product.id + '/' + product.image
 			})
 		} else {
 			var cart = req.session.cart
@@ -37,16 +37,22 @@ router.get('/add/:product', function (req, res, next) {
 					title: slug,
 					qty: 1,
 					price: parseFloat(product.price).toFixed(2),
-					image: 'public/product_images/' + product.id + '/' + product.image
+					image: '/product_images/' + product.id + '/' + product.image
 				})
 			}
 		}
-		//console.log(req.session.cart)
+		console.log(req.session.cart)
 		req.flash('success', 'Product added to Cart')
 		res.redirect('back')
 	})
 });
 
+router.get('/checkout', function (req, res, next) {
+	res.render('checkout', {
+		title: 'Checkout',
+		cart: req.session.cart
+	})
+});
 
 
 module.exports = router;
