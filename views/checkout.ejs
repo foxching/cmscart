@@ -38,7 +38,7 @@
     </tr>
     <tr>
         <td colspan="5" align="right">
-            <a class="btn btn-danger" href="/cart/clear">Clear Cart</a>
+            <a class="clearcart btn btn-danger" href="/cart/clear">Clear Cart</a>
         </td>
         <td colspan="5" align="right">
             <a class="btn btn-primary buynow" href="#">Buy Now</a>
@@ -49,4 +49,13 @@
 <h3 class=" text-center">Your cart is Empty</h3>
 <% } %>
 
+<script>
+$(function() {
+	
+	$('a.clearcart').on('click', function() {
+		if (!confirm('Confirm Clear Cart?')) return false;
+	});
+	
+});
+</script>
 <%- include('./layouts/footer.ejs')%>

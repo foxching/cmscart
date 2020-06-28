@@ -1,15 +1,17 @@
 var express = require('express');
 var router = express.Router();
-
 var Product = require('../models/product');
 
 /* 
-* GET
+* GET cart
 */
 router.get('/', function(req, res, next) {
 	res.send('Cart');
 });
 
+/* 
+* ADD product to cart
+*/
 router.get('/add/:product', function(req, res, next) {
 	var slug = req.params.product;
 	Product.findOne({ slug: slug }, function(err, product) {
@@ -47,6 +49,9 @@ router.get('/add/:product', function(req, res, next) {
 	});
 });
 
+/* 
+* GET cart checkout 
+*/
 router.get('/checkout', function(req, res, next) {
 	if (req.session.cart && req.session.cart.length == 0) {
 		delete req.session.cart;
@@ -58,6 +63,10 @@ router.get('/checkout', function(req, res, next) {
 		});
 	}
 });
+
+/* 
+* UPDATE cart product quantity
+*/
 
 router.get('/update/:product', function(req, res, next) {
 	var product = req.params.product;
@@ -89,6 +98,15 @@ router.get('/update/:product', function(req, res, next) {
 		}
 	}
 	req.flash('success', 'Cart product updated');
+	res.redirect('/cart/checkout');
+});
+
+/* 
+* clear all cart item
+*/
+router.get('/clear', function(req, res, next) {
+	delete req.session.cart;
+	req.flash('success', 'Cart Items cleared');
 	res.redirect('/cart/checkout');
 });
 
