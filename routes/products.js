@@ -30,6 +30,7 @@ router.get('/:category', function(req, res, next) {
 
 router.get('/:category/:product', function(req, res, next) {
 	var galleryImages = null;
+	var loggedIn = req.isAuthenticated() ? true : false;
 	Product.findOne({ slug: req.params.product }, function(err, product) {
 		if (err) {
 			console.log(err);
@@ -40,7 +41,12 @@ router.get('/:category/:product', function(req, res, next) {
 					console.log(err);
 				} else {
 					galleryImages = files;
-					res.render('product', { title: product.title, product: product, galleryImages: galleryImages });
+					res.render('product', {
+						title: product.title,
+						product: product,
+						galleryImages: galleryImages,
+						loggedIn: loggedIn
+					});
 				}
 			});
 		}

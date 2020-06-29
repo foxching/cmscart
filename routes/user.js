@@ -70,7 +70,7 @@ router.post(
 						email: email,
 						username: username,
 						password: password,
-						admin: 1
+						admin: 0
 					});
 
 					bcrypt.genSalt(10, function(err, salt) {
@@ -94,5 +94,27 @@ router.post(
 		}
 	}
 );
+
+/*
+ * GET login
+ */
+router.get('/login', function(req, res) {
+	if (res.locals.user) res.redirect('/');
+
+	res.render('login', {
+		title: 'Login'
+	});
+});
+
+/*
+ * POST login
+ */
+router.post('/login', function(req, res, next) {
+	passport.authenticate('local', {
+		successRedirect: '/',
+		failureRedirect: '/users/login',
+		failureFlash: true
+	})(req, res, next);
+});
 
 module.exports = router;
