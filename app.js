@@ -6,10 +6,8 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var logger = require('morgan');
 var fileUpload = require('express-fileupload');
+var passport = require('passport')
 
-if (process.env.NODE_ENV !== 'production') {
-	require('dotenv/config');
-}
 
 //init app
 var app = express();
@@ -84,6 +82,7 @@ app.use(passport.session());
 
 app.get('*', function (req, res, next) {
 	res.locals.cart = req.session.cart
+	res.locals.user = req.user || null;
 	next()
 })
 
@@ -91,6 +90,7 @@ app.get('*', function (req, res, next) {
 var pages = require('./routes/pages');
 var products = require('./routes/products');
 var cart = require('./routes/cart')
+var user = require('./routes/user')
 var admin_pages = require('./routes/admin_pages');
 var admin_categories = require('./routes/admin_categories');
 var admin_products = require('./routes/admin_products');
@@ -100,9 +100,14 @@ app.use('/admin/categories', admin_categories);
 app.use('/admin/products', admin_products);
 app.use('/products', products);
 app.use('/cart', cart)
+app.use('/users', user)
 app.use('/', pages);
 
 //mongodb connection
+if (process.env.NODE_ENV !== 'production') {
+	require('dotenv/config');
+}
+
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
 	console.log('Connected to DB');
 });
