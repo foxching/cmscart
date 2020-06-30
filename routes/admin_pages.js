@@ -2,16 +2,18 @@ var express = require('express');
 var router = express.Router();
 const { check, validationResult } = require('express-validator');
 var Page = require('../models/page');
+var auth = require('../config/auth');
+var isAdmin = auth.isAdmin;
 
 // get pages
-router.get('/', function (req, res, next) {
+router.get('/', isAdmin, function (req, res, next) {
 	Page.find({}).sort({ sorting: 1 }).exec(function (err, pages) {
 		res.render('admin/pages', { pages: pages });
 	});
 });
 
 //get add page
-router.get('/add-page', function (req, res, nexy) {
+router.get('/add-page', isAdmin, function (req, res, nexy) {
 	var title = '';
 	var slug = '';
 	var content = '';
@@ -71,7 +73,7 @@ router.post(
 );
 
 //get edit page
-router.get('/edit-page/:id', function (req, res, nexy) {
+router.get('/edit-page/:id', isAdmin, function (req, res, nexy) {
 	Page.findById(req.params.id, function (err, page) {
 		if (err) {
 			console.log(err);
@@ -141,7 +143,7 @@ router.post(
 );
 
 // get delete  page
-router.get('/delete-page/:id', function (req, res, next) {
+router.get('/delete-page/:id', isAdmin, function (req, res, next) {
 	Page.findByIdAndRemove(req.params.id, function (err) {
 		if (err) return console.log(err);
 		Page.find({}).sort({ sorting: 1 }).exec(function (err, pages) {
@@ -151,7 +153,7 @@ router.get('/delete-page/:id', function (req, res, next) {
 				req.app.locals.pages = pages
 			}
 		});
-		req.flash('success', 'Page Deleted');
+		req.flash('success', 'Page Deleted successfully');
 		res.redirect('/admin/pages');
 	});
 });
