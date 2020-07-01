@@ -13,18 +13,25 @@ var isAdmin = auth.isAdmin;
 
 // get products
 router.get('/', isAdmin, function (req, res, next) {
-	var count;
 
-	Product.countDocuments(function (err, c) {
-		count = c;
-	});
+	var perPage = 2
+	var page = req.query.page || 1
 
-	Product.find(function (err, products) {
-		res.render('admin/products', {
-			products: products,
-			count: count
-		});
-	});
+	Product
+		.find({})
+		.skip((perPage * page) - perPage)
+		.limit(perPage)
+		.exec(function (err, products) {
+			Product.countDocuments().exec(function (err, c) {
+				if (err) return next(err)
+				res.render('admin/products', {
+					products: products,
+					current: page,
+					pages: Math.ceil(c / perPage),
+					count: c
+				})
+			})
+		})
 });
 
 //get add product
