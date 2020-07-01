@@ -27,7 +27,7 @@ router.get('/', isAdmin, function (req, res, next) {
 				res.render('admin/products', {
 					products: products,
 					current: page,
-					pages: Math.ceil(c / perPage),
+					productPages: Math.ceil(c / perPage),
 					count: c
 				})
 			})

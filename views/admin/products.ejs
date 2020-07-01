@@ -35,31 +35,31 @@
     </tbody>
 </table>
 <div class="text-center">
-    <% if (pages > 0) { %>
+    <% if (productPages > 0) { %>
     <ul class="pagination text-center">
-        <% if (current == 1) { %>
-        <li class="disabled"><a>First</a></li>
+        <% if (Number(current) - 1 > 0) { %>
+        <li><a href="/admin/products/?page=<%= Number(current) - 1 %>">Prev</a></li>
         <% } else { %>
-        <li><a href="/admin/products/?page=1">First</a></li>
+        <li class="disabled"><a>Prev</a></li>
         <% } %>
         <% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
         <% if (i !== 1) { %>
         <li class="disabled"><a>...</a></li>
         <% } %>
-        <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
+        <% for (; i <= (Number(current) + 4) && i <= productPages; i++) { %>
         <% if (i == current) { %>
         <li class="active"><a><%= i %></a></li>
         <% } else { %>
         <li><a href="/admin/products/?page=<%= i %>"><%= i %></a></li>
         <% } %>
-        <% if (i == Number(current) + 4 && i < pages) { %>
+        <% if (i == Number(current) + 4 && i < productPages) { %>
         <li class="disabled"><a>...</a></li>
         <% } %>
         <% } %>
-        <% if (current == pages) { %>
-        <li class="disabled"><a>Last</a></li>
+        <% if (Number(current) + 1 <= productPages) { %>
+        <li><a href="/admin/products/?page=<%= Number(current) + 1 %>">Next</a></li>
         <% } else { %>
-        <li><a href="/admin/products/?page=<%= pages %>">Last</a></li>
+        <li class="disabled"><a>Next</a></li>
         <% } %>
     </ul>
     <% } %>
