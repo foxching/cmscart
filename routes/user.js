@@ -11,8 +11,17 @@ var User = require('../models/user');
  * GET register
  */
 router.get('/register', function (req, res) {
+	var name = '';
+	var email = '';
+	var username = ''
+	var password = '';
 	res.render('register', {
-		title: 'Register'
+		title: 'Register',
+		name: name,
+		email: email,
+		username: username,
+		password: password,
+
 	});
 });
 
@@ -23,18 +32,10 @@ router.post(
 	'/register',
 	[
 		check('name', 'Invalid').not().isEmpty().withMessage('Name must not be empty'),
-		check('email', 'Invalid email')
-			.not()
-			.isEmpty()
-			.withMessage('Email must not be empty')
-			.isEmail()
-			.withMessage('Email is invalid'),
-		check('username', 'Invalid Username ').not().isEmpty().withMessage('Username must not be empty'),
-		check('password', 'Invalid Password ').not().isEmpty().withMessage('Password must not be empty'),
-		check('password2', 'Invalid Password2 ')
-			.not()
-			.isEmpty()
-			.withMessage('Please confirm your password ')
+		check('email', 'invalid').isEmail().withMessage('Email is invalid'),
+		check('username', 'Invalid Username ').isLength({ min: 5 }).withMessage('Username must be at least 5 chars long'),
+		check('password', 'Invalid Password ').isLength({ min: 5 }).withMessage('Password must be at least 5 chars long'),
+		check('password2')
 			.custom((value, { req }) => {
 				if (value !== req.body.password) {
 					throw new Error('Password confirmation does not match password');
@@ -44,20 +45,24 @@ router.post(
 				return true;
 			})
 	],
-	function (req, res) {
+	function (req, res, next) {
 		var name = req.body.name;
 		var email = req.body.email;
 		var username = req.body.username;
 		var password = req.body.password;
-		//var password2 = req.body.password2;
 
 		var errors = validationResult(req);
 
 		if (!errors.isEmpty()) {
 			res.render('register', {
+				title: 'Register',
 				errors: errors.array(),
 				user: null,
-				title: 'Register'
+				name: name,
+				email: email,
+				username: username,
+				password: password,
+
 			});
 		} else {
 			User.findOne({ username: username }, function (err, user) {

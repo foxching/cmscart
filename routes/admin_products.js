@@ -35,7 +35,7 @@ router.get('/', isAdmin, function (req, res, next) {
 });
 
 //get add product
-router.get('/add-product', isAdmin, function (req, res, nexy) {
+router.get('/add-product', isAdmin, function (req, res, next) {
 	var title = '';
 	var desc = '';
 	var price = '';
