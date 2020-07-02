@@ -11,6 +11,8 @@ var User = require('../models/user');
  * GET register
  */
 router.get('/register', function(req, res) {
+	if (res.locals.user) res.redirect('/');
+
 	res.render('register', {
 		title: 'Register',
 		newUser: new User()
@@ -109,6 +111,7 @@ router.get('/login', function(req, res) {
 /*
  * POST login
  */
+
 router.post('/login', function(req, res, next) {
 	passport.authenticate('local', {
 		successRedirect: '/',
