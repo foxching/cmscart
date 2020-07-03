@@ -4,13 +4,47 @@
     <% products.forEach(function(p) { %>
     <div class="col-xs-12 col-md-4 p">
         <a class="pa" href="/products/<%= p.category %>/<%= p.slug %>">
+            <% if(p.image == ''){ %>
+            <img class="pimage" src="/images/noImage.png">
+            <% } else { %>
             <img class="pimage" src="/product_images/<%= p.id %>/<%= p.image %> " />
+            <% }%>
         </a>
         <h3><%= p.title %> </h3>
         <h4>$<%= parseFloat(p.price).toFixed(2) %> </h4>
         <a class="vd" href="/products/<%= p.category %>/<%= p.slug %>">View Details</a>
     </div>
     <% })  %>
+</div>
+<div class="row text-center">
+    <% if (productPages > 0) { %>
+    <ul class="pagination text-center">
+        <% if (Number(current) - 1 > 0) { %>
+        <li><a href="/products/<%= title %>/?page=<%= Number(current) - 1 %>">Prev</a></li>
+        <% } else { %>
+        <li class="disabled"><a>Prev</a></li>
+        <% } %>
+        <% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+        <% if (i !== 1) { %>
+        <li class="disabled"><a>...</a></li>
+        <% } %>
+        <% for (; i <= (Number(current) + 4) && i <= productPages; i++) { %>
+        <% if (i == current) { %>
+        <li class="active"><a><%= i %></a></li>
+        <% } else { %>
+        <li><a href="/products/<%= title %>/?page=<%= i %>"><%= i %></a></li>
+        <% } %>
+        <% if (i == Number(current) + 4 && i < productPages) { %>
+        <li class="disabled"><a>...</a></li>
+        <% } %>
+        <% } %>
+        <% if (Number(current) + 1 <= productPages) { %>
+        <li><a href="/products/<%= title %>/?page=<%= Number(current) + 1 %>">Next</a></li>
+        <% } else { %>
+        <li class="disabled"><a>Next</a></li>
+        <% } %>
+    </ul>
+    <% } %>
 </div>
 
 <%- include('./layouts/footer.ejs')%>

@@ -32,12 +32,31 @@ router.get('/', function (req, res, next) {
 */
 router.get('/:category', function (req, res, next) {
 	var categorySlug = req.params.category;
+	var perPage = 6
+	var page = req.query.page || 1
+
 	Category.findOne({ slug: categorySlug }, function (err, category) {
 		if (err) return console.log(err);
-		Product.find({ category: categorySlug }, function (err, products) {
-			if (err) console.log(err);
-			res.render('cat_products', { title: category.title, products: products });
-		});
+		// Product.find({ category: categorySlug }, function (err, products) {
+		// 	if (err) console.log(err);
+		// 	res.render('cat_products', { title: category.title, products: products });
+		// });
+		Product.find({ category: categorySlug })
+			.skip((perPage * page) - perPage)
+			.limit(perPage)
+			.exec(function (err, products) {
+				Product.find({ category: categorySlug }).countDocuments().exec(function (err, c) {
+					if (err) return next(err)
+					res.render('cat_products', {
+						title: category.title,
+						products: products,
+						current: page,
+						productPages: Math.ceil(c / perPage),
+					})
+				})
+			})
+
+
 	});
 });
 
