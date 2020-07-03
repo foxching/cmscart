@@ -5,15 +5,15 @@
 <form method="POST" action="/admin/pages/add-page">
     <div class="form-group">
         <label for="title">Title</label>
-        <input type="text" name="title" value="<%= title %>" class="form-control" placeholder="Title">
+        <input type="text" name="title" value="<%= newPage.title %>" class="form-control" placeholder="Title">
     </div>
     <div class="form-group">
         <label for="slug">Slug</label>
-        <input type="text" name="slug" value="<%= slug %>" class="form-control" placeholder="Slug">
+        <input type="text" name="slug" value="<%= newPage.slug %>" class="form-control" placeholder="Slug">
     </div>
     <div class="form-group">
         <label for="content">Content</label>
-        <textarea name="content" id="ta" cols="30" rows="10" value="<%= content %>" class="form-control"></textarea>
+        <textarea name="content" id="ta" cols="30" rows="10"  class="form-control"><%= newPage.content %></textarea>
     </div>
     <button class="btn btn-default">Submit</button>
 </form>
