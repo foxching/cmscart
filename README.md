@@ -1,10 +1,10 @@
 
-#CMS Shopping Cart
+# CMS Shopping Cart
 
 A simple node/express based  shopping cart. 
 
 
-#Tech stack
+## Tech stack
 
 * Nodejs & Express
 * Ejs templating engine
